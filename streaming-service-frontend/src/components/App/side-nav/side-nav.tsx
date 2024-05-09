@@ -1,14 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import styles from "./page.module.css";
 import Image from "next/image";
 import { useQuery } from "@apollo/client";
 import { gql } from "@apollo/client";
 import { useSelector } from "react-redux";
-import { getImageUrl } from "@/utils/tools/images";
-
 import LogoutButton from "../Artist/LogoutButton";
+import styles from "./page.module.css";
+
 const GET_USER_PROFILE_IMAGE = gql`
   query GetUserProfileImage($userId: ID!) {
     getUserById(_id: $userId) {
@@ -33,21 +32,6 @@ const SideNav: React.FC = () => {
 
   const [homeRoute, setHomeRoute] = useState("/sound");
   const [searchRoute, setSearchRoute] = useState("/sound/search");
-  //   const [profileImageUrl, setProfileImageUrl] =
-  //     useState<string>("/img/ellipse.png");
-
-  //   useEffect(() => {
-  //     const fetchImageUrl = async () => {
-  //       if (data?.getUserById?.profile_image_url) {
-  //         const resolvedUrl = await getImageUrl(
-  //           data.getUserById.profile_image_url
-  //         );
-  //         setProfileImageUrl(resolvedUrl);
-  //       }
-  //     };
-
-  //     fetchImageUrl();
-  //   }, [data]);
 
   useEffect(() => {
     const determineRoutes = () => {
@@ -76,13 +60,18 @@ const SideNav: React.FC = () => {
     return <div>Error: {error.message}</div>;
   }
 
+  const profileImageUrl =
+    data?.getUserById?.profile_image_url
+      ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/file/download/${data.getUserById.profile_image_url}`
+      : "/img/ellipse.png";
+
   return (
     <section className={styles.sideNav}>
       <header>
         <Link href={"/sound/soundProfile"}>
           <Image
             className="rounded-full border border-white"
-            src="/img/ellipse.png"
+            src={profileImageUrl}
             width={45}
             height={45}
             alt="Profile image"
@@ -121,3 +110,4 @@ const SideNav: React.FC = () => {
 };
 
 export default SideNav;
+
